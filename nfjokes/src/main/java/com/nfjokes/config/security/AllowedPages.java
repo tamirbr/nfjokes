@@ -11,7 +11,8 @@ public class AllowedPages {
     		"/",
     		"/register",
     		"/about",
-    		"/contact"
+    		"/contact",
+			"/api/users/**"
     		};
     
     public static final String[] ADMIN = {

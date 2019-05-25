@@ -1,47 +1,53 @@
 <div class="container-fluid pt-3">
   <div class="row">
-  <div class="col-md-5 mb-2" id="login">
-  <form class="p-3 box-content" name="f" action="/login" method="POST">
-  <h3 class="text-success text-center">Login</h3>
-  <div class="alert alert-dismissable alert-danger p-2" th:if="${param.error != null}">
+  <div class="col-md-5 mb-2">
+  <form class="p-3 box-content" #f="ngForm" name="loginForm" (ngSubmit)="login()">
+  <h3 class="text-center">Login</h3>
+  <div class="alert alert-dismissable alert-danger p-2" [hidden]="loginMessage == null">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <p class="p-0 m-0" th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></p>
+      <p class="p-0 m-0">{{loginMessage}}</p>
   </div>
     <div class="form-group">
       <label>Email</label>
-      <input type="text" name="username" class="form-control" placeholder="Email"/>
+      <input type="text" name="email" [(ngModel)]="loginModel.email" class="form-control" placeholder="Email"
+      #email="ngModel"/>
     </div>
     <div class="form-group">
       <label>Password</label>
-      <input type="password" name="password" class="form-control" placeholder="Password"/>
+        <input type="password" name="loginPassword" [(ngModel)]="loginModel.password" class="form-control" placeholder="Password"
+        #password="ngModel"/>
     </div>
     <div class="row">
       <div class="col-auto">
-        <button name="submit" type="submit" value="Login" class="btn btn-primary">Log in</button>	
+        <button name="submit" type="submit" value="Login" class="btn btn-info">Log in</button>	
       </div>
       <div class="col">
       <div class="custom-control custom-checkbox mt-3">
-          <input type="checkbox" class="custom-control-input" id="remember-me" name="remember-me"/>
-          <label class="custom-control-label" for="remember-me">Remember me</label>
+          <input type="checkbox" class="custom-control-input" id="rememberMe" name="rememberMe" [(ngModel)]="loginModel.rememberMe" (change)="toggleVisibility('loginModel','rememberMe',$event)"/>
+          <label class="custom-control-label" for="rememberMe">Remember me</label>
       </div>	
       </div>
     </div>
   </form>
   </div>
   <div class="col-md-7 mb-2">
-  <form name="registerForm" #register="ngForm" (submit)="register.form.valid && register()" class="p-3 box-content" novalidate enctype="multipart/form-data">
-  <h3 class="text-success text-center">Register</h3>
+    <form name="registerForm" #register="ngForm" (ngSubmit)="register.form.valid && registration()" class="p-3 box-content" novalidate enctype="multipart/form-data">
+    <h3 class="text-center">Register</h3>
+    <div class="alert alert-dismissable p-2" [ngClass]="{'alert-danger': fail,'alert-success': fail == false}" [hidden]="!registerMessage">
+      <p class="p-0 m-0">{{registerMessage}}</p>
+    </div>
     <div class="form-group">
       <label>Email</label>
-      <input type="text" name="email" [(ngModel)]="model.email" class="form-control" placeholder="Email"
-      #email="ngModel" [ngClass]="{'is-invalid': register.submitted && email.invalid}" required email/>
+      <input type="text" (change)="emailAvailability(register)" name="email" [(ngModel)]="model.email" class="form-control" placeholder="Email"
+      #email="ngModel" [ngClass]="{'is-invalid': (register.submitted && email.invalid) || email.errors?.use}" required email use/>
       <div *ngIf="register.submitted && email.invalid" class="text-danger">
         <div *ngIf="email.errors?.required">Email is required</div>
         <div *ngIf="email.errors?.email">Email is not valid</div>
       </div>
+      <div class="text-danger" *ngIf="email.errors?.use">Email already in use</div>
     </div>
-    <div class="row mb-3 form-group">
-      <div class="col-md-6">
+    <div class="row form-group mb-0">
+      <div class="col-md-6 mb-3">
         <label>Password</label>
         <input type="password" name="password" [(ngModel)]="model.password" class="form-control" placeholder="Password"
         #password="ngModel" [ngClass]="{'is-invalid': register.submitted && password.invalid}" required minlength="6"/>
@@ -50,7 +56,7 @@
           <div *ngIf="password.errors?.minlength">Password must contain at least 6 characters</div>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6 mb-3">
         <label>Confirm Password</label>
         <input type="password" name="rePassword" [(ngModel)]="model.rePassword" class="form-control" placeholder="Confirm Password"
         #rePassword="ngModel" [ngClass]="{'is-invalid': register.submitted && rePassword.invalid}" required minlength="6"/>
@@ -72,16 +78,19 @@
 
     <label class="labelText">User photo</label><br/>
     <div class="col-md-6 custom-file">
-      <input id="multipartImage" aria-describedby="User Image" accept="image/*" name="multipartImage" [(ngModel)]="model.multipartImage" type="file" class="custom-file-input"/>
-      <label class="custom-file-label" for="multipartImage">Choose file</label>
+      <input (change)="selectFile($event)" aria-describedby="User Image" accept="image/*" type="file" class="custom-file-input"/>
+      <label class="custom-file-label"  for="multipartImage">{{(!model.multipartImage) ? 'Choose file' : model.multipartImage.name}}</label>
     </div>
                           
     <div class="custom-control custom-checkbox mt-3 mb-3">
-        <input type="checkbox" class="custom-control-input" id="terms" name="terms" [(ngModel)]="model.terms" (change)="toggleVisibility($event)"/>
+        <input type="checkbox" class="custom-control-input" id="terms" name="terms" [(ngModel)]="model.terms" (change)="toggleVisibility('model','terms',$event)" required/>
         <label class="custom-control-label" for="terms">I agree to the <a target="_blank" href="/terms">Terms of use</a></label>
+        <div *ngIf="register.submitted && model.terms == false" class="text-danger">
+            You must read and accept the terms of use
+        </div>
     </div>
       
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit" class="btn btn-info">Register</button>
   </form>
   </div>
   </div>

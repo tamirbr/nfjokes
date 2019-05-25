@@ -6,13 +6,12 @@ import com.nfjokes.model.UserRole;
 import com.nfjokes.model.RegisterModel;
 import com.nfjokes.service.UserService;
 import com.nfjokes.utils.Tools;
-import org.apache.commons.lang3.StringUtils;
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.List;
@@ -49,23 +48,22 @@ public class UserController {
             throw new ValidationException();
         }
 
-        User user = registerAction(userViewModel.getUser());
+        User user = registerAction(userViewModel.getUser(),userViewModel.getMultipartImage());
 
         return user;
     }
 
-    private User registerAction(User newUser) {
+    private User registerAction(User newUser,MultipartFile multipartFile) {
         //TODO: remove user set enabled and auto login to confirm registered email
         try{
             newUser.setNonLocked(true);
             newUser.setEnabled(true);
             newUser.setRole(UserRole.USER);
-            //newUser.setImage(Tools.setImage(userImage));
+            newUser.setImage(Tools.setImage(multipartFile));
             userService.save(newUser);
             return newUser;
         }catch (Exception e) {
-            e.printStackTrace();
-            throw new ValidationException();
+            throw new HibernateException(e);
         }
     }
 

@@ -10,16 +10,16 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 import lombok.extern.java.Log;
 
-@Log
+//@Log
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer  {
 
 	public static void main(String[] args) {
-        startH2Server();
+        //startH2Server();
 		SpringApplication.run(Application.class, args);
 	}
 	
-	@Override
+	/*@Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         startH2Server();
         return application.sources(Application.class);
@@ -36,6 +36,6 @@ public class Application extends SpringBootServletInitializer  {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to start H2 server: ", e);
         }
-    }
+    }*/
 
 }

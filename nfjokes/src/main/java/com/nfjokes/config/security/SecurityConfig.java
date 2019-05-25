@@ -25,38 +25,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+                auth
+                .inMemoryAuthentication()
+                .withUser("user")
+                .password("password")
+                .roles("USER");
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.headers().cacheControl().disable();
-        http.authorizeRequests()
-                .antMatchers(AllowedPages.PAGES)
-                .permitAll()
-                
+                http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers(AllowedPages.PAGES).permitAll()
                 .antMatchers(AllowedPages.ADMIN).hasRole("ADMIN")
                 .antMatchers(AllowedPages.USER).hasAnyRole("ADMIN","USER")
-                
-                .and()
-                .csrf().disable()
-
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .successForwardUrl("/")
-
-                .and()
-                .logout()
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "SESSION")
-                
                 .and()
                 .rememberMe().key("uniqueAndSecret")
                 .tokenValiditySeconds(604800) // 7 days
-
                 .and()
-                .sessionManagement()
-                .sessionFixation()
-                .migrateSession()
-                .maximumSessions(1)
-                .expiredUrl("/logout");
+                .httpBasic();
     }
 
     @Bean

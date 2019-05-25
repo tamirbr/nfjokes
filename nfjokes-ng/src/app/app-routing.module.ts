@@ -3,13 +3,27 @@ import { Routes, RouterModule } from '@angular/router';
 import { JokesComponent } from './jokes/jokes.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { RegisterComponent } from './register/register.component';
-import { FormsModule } from "@angular/forms";
+import { MyJokesComponent } from './my-jokes/my-jokes.component';
+import { AddJokeComponent } from './add-joke/add-joke.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [{
   path:'jokes',
   component:JokesComponent
   }, {
+  path:'my-jokes',
+  component:MyJokesComponent
+  }, {
+  path:'tell-a-joke',
+  component:AddJokeComponent
+  }, {
+  path:'settings',
+  component:SettingsComponent
+  }, {
   path:'register',
+  component:RegisterComponent
+  },{
+  path:'login',
   component:RegisterComponent
   }, {
   path:'',

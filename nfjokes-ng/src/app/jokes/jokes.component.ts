@@ -10,6 +10,7 @@ export class JokesComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    
   }
 
 }

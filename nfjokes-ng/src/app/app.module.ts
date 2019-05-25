@@ -9,15 +9,21 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { RegisterComponent } from './register/register.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { SettingsComponent } from './settings/settings.component';
+import { MyJokesComponent } from './my-jokes/my-jokes.component';
+import { AddJokeComponent } from './add-joke/add-joke.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     NavigationComponent,
+    MyJokesComponent,
+    AddJokeComponent,
     JokesComponent,
     NotFoundComponent,
-    RegisterComponent
+    RegisterComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

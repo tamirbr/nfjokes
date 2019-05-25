@@ -1,5 +1,6 @@
 package com.nfjokes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +36,8 @@ public class User extends BaseEntity implements UserDetails, Serializable {
     private String email;
     @Lob
     private byte[] image;
-    @OneToMany(mappedBy = "user", cascade= CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Joke> jokes = new ArrayList<>();
 
     private boolean nonLocked;

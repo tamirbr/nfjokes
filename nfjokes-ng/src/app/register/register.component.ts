@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { RegisterUserModel, LoginUserModel } from './model/register';
+import { ApiService } from '../shared/api.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -8,52 +11,83 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RegisterComponent implements OnInit {
  
-  model: UserModel = {
+  model: RegisterUserModel = {
     email:'',
     name:'',
     password:'',
-    image:null,
     multipartImage:null,
     rePassword:'',
     terms:false
   };
 
+  loginModel: LoginUserModel = {
+    email:'',
+    password:'',
+    rememberMe:false
+  };
 
-  constructor(private http: HttpClient) { 
+  @ViewChild('register') formValues: any;
+  registerMessage:string;
+  fail:boolean;
+  emailCheck:boolean;
+
+  loginMessage:string;
+
+  constructor(private apiService: ApiService,private authService: AuthService, private router: Router) { 
 
   }
 
   ngOnInit() {
+
   }
 
-  register(): void{
-    let url = "http://localhost:8080/api/users/register";
-    this.http.post(url, this.model).subscribe(
+  registration(): void{
+    this.apiService.registrUser(this.model).subscribe(
       res => {
-        location.reload();
+        this.registerMessage = 'Registered successfully';
+        this.fail = false;
+        this.formValues.resetForm();
       },
       err =>{
-        alert("Error");
+        this.registerMessage = 'Registration failed';
+        this.fail = true;
       }
     );
   }
 
-  toggleVisibility(e){
-    this.model.terms= e.target.checked;
+  login() {
+    this.authService.authenticate(this.loginModel);
+    return false;
   }
 
-  public onFileSelected(event) {
-    //this.multipartImage = <File>event.target.files[0];
+  toggleVisibility(modelType:any,modelField:any,e:any){
+    this[modelType][modelField] = e.target.checked;
+  }
+
+  emailAvailability(register:any){
+    if(this.model.email){
+      this.apiService.getUserByEmail(this.model.email).subscribe(
+        res=>{
+          var emailRes = (res) ? true : false;
+          if(emailRes){
+            register.form.controls['email'].setErrors({'use': emailRes});
+          }
+        },
+        err =>{
+          
+        }
+      );
+    }
+  }
+
+  selectFile(event:any) {
+    let file:File = event.target.files[0];
+    if (file.type.match('image.*')) {
+      this.model.multipartImage = file;
+    } else {
+      alert('invalid format!');
+    }
   }
 
 }
 
-export interface UserModel{
-  name:string;
-  email:string;
-  password:string;
-  image:File;
-  multipartImage:File;
-  rePassword:string;
-  terms:boolean;
-}
